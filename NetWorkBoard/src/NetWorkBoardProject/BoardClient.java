@@ -8,8 +8,9 @@ public class BoardClient {
 		// TODO Auto-generated method stub
 		Socket socket = null;
 			try {
-				socket = new Socket("localhost",7777);
-		
+				socket = new Socket("localhost",7899);
+				ReceiveThread NetWorkBoard = new ReceiveThread(socket);
+				NetWorkBoard.start();
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
