@@ -50,11 +50,13 @@ class TestText {
 			Date tumeInDate = new Date();
 			SimpleDateFormat time = new SimpleDateFormat("MMM dd, yyyy, h:mm:ss a", Locale.US);
 
-			bw.write(title + "\t");
-			bw.write(writer + "\t");
-			bw.write(" " + time.format(tumeInDate) + "\t");
+			bw.write(title + "/%/");
+			bw.write(writer + "/%/");
+			bw.write(" " + time.format(tumeInDate) + "/%/");
 			bw.write(content);
 			bw.newLine();
+			System.out.println("Insert | num :" + (linenum+1) + " | titlt : " + title + " | content :" + content + "Writer : " + writer + " |");
+
 			System.out.println("글이 정상적으로 등록되었습니다.");
 
 		} catch (Exception e) {
@@ -80,7 +82,7 @@ class TestText {
 							break;
 						linenum += 1;
 						list.add(liststr);
-						sar = liststr.split("	");
+						sar = liststr.split("/%/");
 						System.out.println(linenum + ". " + sar[0] + sar[1] + sar[2]);
 						System.out.println();
 					}
@@ -104,7 +106,7 @@ class TestText {
 					System.out.println("번호 제목 내용 작성자   작성일");
 					System.out.println("--------------------------------------------");
 					String contstr = list.get(contnum - 1);
-					sar = contstr.split("	");
+					sar = contstr.split("");
 					System.out.println(sar[0] + " " + sar[1] + " " + sar[3] + " " + sar[2]);
 					System.out.println();
 					break;
