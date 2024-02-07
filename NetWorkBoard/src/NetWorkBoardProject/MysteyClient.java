@@ -1,7 +1,9 @@
 package NetWorkBoardProject;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -11,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
-public class BoardClient {
+public class MysteyClient {
 	static List<String> list;
 
 	public static void main(String[] args) {
@@ -26,13 +28,14 @@ public class BoardClient {
 		String[] sar;
 		int page = -1;
 		boolean run = true;
-		ObjectInputStream inList;
+		BufferedReader inList;
 		int linenum;
+		
 
 		try {
-			socket = new Socket("localhost", 7899);
+			socket = new Socket("localhost", 8);
 			outClient = new DataOutputStream(socket.getOutputStream());
-			 inList = new ObjectInputStream(socket.getInputStream());
+			 inList = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			while (run) {
 				try {
 					outClient.writeUTF("Check");
@@ -46,19 +49,17 @@ public class BoardClient {
 						System.out.println("번호   작성자            작성일");
 						System.out.println("------------------------------------------");
 						linenum =0;
-						while(list ==null)
-						list = (List<String>) inList.readObject();
-						System.out.println("리스트 받음" + list.size());
-						for(int i=0;i<list.size();i++) {
-							if (list == null)
+						while(true) {
+							str1 = inList.readLine();
+							if (str1 == null)
 								break;
-							if(linenum <= list.size()) { str1 = list.get(linenum);
 							linenum +=1;
 							sar = str1.split("/%/");
 							System.out.println(linenum + ". " + sar[0] + sar[1] + sar[2]);
 							System.out.println();
-							}
+							
 						}
+						
 						} catch (Exception e) {
 							System.out.println("서버 1번 캐치");
 						}
@@ -141,6 +142,6 @@ public class BoardClient {
 				e.printStackTrace();
 			}
 		}
-	}
-
+	
+		}
 }

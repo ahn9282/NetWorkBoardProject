@@ -13,9 +13,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoardServer {
-	static List<String> mainlist = new ArrayList<>();
-
+public class MysteyServer {
+	
+	static boolean a= true;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Socket socket = null;
@@ -26,11 +26,12 @@ public class BoardServer {
 			while (true) {
 				socket = serverSocket.accept();
 				ReceiveThread rThread = new ReceiveThread(socket);
-				rThread.start();
 				SendThread sThread = new SendThread(socket);
 				sThread.start();
-				SendThread sThread2 = new SendThread(socket);
-				sThread2.start();
+				rThread.start();
+				sThread.setPriority(10);
+				rThread.setPriority(5);
+				
 			}
 		} catch (Exception e) {
 		}
@@ -71,26 +72,20 @@ class ReceiveThread extends Thread {
 				indata = inServer.readUTF();
 				if (indata.equals("Insert")) {
 					indata = inServer.readUTF();
-					BoardServer.mainlist.add(indata);
 					indata = indata + "\n";
 					saveTxt(indata);
 					System.out.println("list================================");
-					for (int i = 0; i < BoardServer.mainlist.size(); i++) {
-						System.out.println((i + 1) + ". " + BoardServer.mainlist.get(i));
-					}
 					System.out.println("====================================");
 				} else if (indata.equals("remove")) {
 					int removenum;
 					removenum = inServer.readInt();
-					BoardServer.mainlist.remove(removenum);
 					System.out.println(removenum + "번 글을 삭제");
 					System.out.println("list================================");
-					for (int i = 0; i < BoardServer.mainlist.size(); i++) {
-						System.out.println((i + 1) + ". " + BoardServer.mainlist.get(i));
 
-					}
 					System.out.println("====================================");
-				} else if (indata.equals("Check")) {}
+				} else if (indata.equals("Check")) {
+					
+				}
 				Thread.sleep(100);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -117,21 +112,33 @@ class SendThread extends Thread implements Serializable {
 
 	@Override
 	public void run() {
-		while (Send != null) {
-			try {
-				list = BoardServer.mainlist;
-				System.out.println("전송~");
-				if (list != null) {
-					for (int i = 0; i < list.size(); i++) {
-						System.out.println(list.get(i));
-					}
+		try {
+			System.out.println("전송~");
+			if (list != null) {
+				for (int i = 0; i < list.size(); i++) {
+					System.out.println(list.get(i));
 				}
-				Send.writeObject(BoardServer.mainlist);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				System.out.println("익명의 이용자 로그아웃2");
-				continue;
 			}
+			Send.writeObject(list);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("익명의 이용자 로그아웃2");
+		}
+		while (Send != null) {
+//			try {
+//				list = BoardServer.mainlist;
+//				System.out.println("전송~");
+//				if (list != null) {
+//					for (int i = 0; i < list.size(); i++) {
+//						System.out.println(list.get(i));
+//					}
+//				}
+//				Send.writeObject(list);
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				System.out.println("익명의 이용자 로그아웃2");
+//				continue;
+//			}
 		}
 	}
 
