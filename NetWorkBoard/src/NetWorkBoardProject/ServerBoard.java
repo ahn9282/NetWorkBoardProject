@@ -14,7 +14,6 @@ import java.util.Scanner;
 
 public class ServerBoard {
 	static List<String> list = new ArrayList<>();
-
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Socket socket = null;
@@ -24,7 +23,7 @@ public class ServerBoard {
 			serverSocket = new ServerSocket(9282);
 			while (true) {
 				socket = serverSocket.accept();
-				System.out.println("이용자가 들어왔습니다.");
+				System.out.println("이용자가 들어왔습니다." );
 				ServerOfBoard server = new ServerOfBoard(socket);
 				server.start();
 
@@ -61,20 +60,24 @@ class ServerOfBoard extends Thread {
 		}
 	}
 
-	void printList(int a, int b) throws Exception{
-		for(int i = 0 ; i < ServerBoard.list.size();i++) {
+	void printList(int a, int b) throws Exception {
+		for (int i = 0; i < ServerBoard.list.size(); i++) {
 			liststr = ServerBoard.list.get(i);
 			sarr = liststr.split("/%/");
 			try {
-			if(a == 3) {
-					output.writeUTF((i+1) + ". " + sarr[0] + "\t" + sarr[1] + "\t" + sarr[2] + "\n");
-				}else if(a == 4) {
-					if(i == b) {
-					output.writeUTF((i+1) + ". " + sarr[0] + "\t" + sarr[3]+"\t"+ sarr[1] + "\t" + sarr[2] + "\n");
-				}
+				if (a == 3) {
+					output.writeUTF((i + 1) + ". "+"\t" + sarr[0] + "\t" + sarr[1] + "\t" + sarr[2] + "\n");
+				} else if (a == 4) {
+					if (i == b) {
+						output.writeUTF(
+								(i + 1) + ". "+"\t" + sarr[0] + "\t" + sarr[3] + "\t" + sarr[1] + "\t" + sarr[2] + "\n");
 					}
-				} catch (IOException e) {
+				} else if (a == 5) {
+					System.out.println((i + 1) + ". "+"\t" + sarr[0] + "\t" + sarr[1] + "\t" + sarr[2] + "\t" + sarr[1]);
+
 				}
+			} catch (IOException e) {
+			}
 		}
 	}
 
@@ -85,8 +88,35 @@ class ServerOfBoard extends Thread {
 	String oneLine() {
 		return "----------------------------------------------------------------------------" + "\n";
 	}
-	
-	
+
+	void showstate() {
+		System.out.println("!!!!!!!!!실시간 게시판 !!!!!!!!!!!");
+		System.out.print(twoLine());
+		System.out.print(" 번호    제목      작성자       날짜         내용" + "\n");
+		System.out.print(oneLine());
+		if (ServerBoard.list.size() > 0) {
+			try {
+				printList(5, 0);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.print(oneLine());
+	}
+	int checknum(String str) {
+		selectnum = Integer.parseInt(str);
+		if (ServerBoard.list.size() < selectnum) {
+			try {
+				output.writeUTF("해당 번호의 게시글은 없습니다." + "\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return phase = 1;
+		} else {
+			return selectnum -= 1;
+		}
+	}
 
 	@Override
 	public void run() {
@@ -98,13 +128,15 @@ class ServerOfBoard extends Thread {
 					output.writeUTF(twoLine());
 					output.writeUTF(" 번호    제목      작성자         날짜" + "\n");
 					output.writeUTF(oneLine());
-					if (ServerBoard.list.size() > 0)
+					if (ServerBoard.list.size() > 0) {
 						try {
-							printList(3,0);
+							printList(3, 0);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-					output.writeUTF("|| 1. 목록" + "\t" + "2. 등록" + "\t" + "3. 내용" + "\t" + "4. 삭제" + "\t" + "0. 종료 ||  -->>");
+					}
+					output.writeUTF(
+							"|| 1. 목록" + "\t" + "2. 등록" + "\t" + "3. 내용" + "\t" + "4. 삭제" + "\t" + "0. 종료 ||  -->>");
 					phasestr = input.readUTF();
 					phase = Integer.parseInt(phasestr);
 					break;
@@ -121,6 +153,7 @@ class ServerOfBoard extends Thread {
 					liststr = title + "/%/" + writer + "/%/" + now + "/%/" + content;
 					ServerBoard.list.add(liststr);
 					phase = 1;
+					showstate();
 					break;
 
 				case 3:
@@ -129,50 +162,50 @@ class ServerOfBoard extends Thread {
 					output.writeUTF(oneLine());
 					if (ServerBoard.list.size() > 0)
 						try {
-							printList(3,0);
+							printList(3, 0);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					output.writeUTF("위 게시판 중 하나를 선택해 주세요.-->>");
 					numstr = input.readUTF();
-					selectnum = Integer.parseInt(numstr);
-					if(ServerBoard.list.size() < selectnum) {
-						output.writeUTF("해당 번호의 게시글은 없습니다." + "\n");
-						phase = 1;
-						break;
-					}else {
-						selectnum -=1;
-					}
+					checknum(numstr);
+					if(phase == 1)break;
 					output.writeUTF(twoLine());
 					output.writeUTF(" 번호    제목    내용          작성자         날짜" + "\n");
 					output.writeUTF(oneLine());
 					if (ServerBoard.list.size() > 0)
 						try {
-							printList(4,selectnum);
+							printList(4, selectnum);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-					output.writeUTF("|| 1. 목록" + "\t" + "2. 등록" + "\t" + "3. 내용" + "\t" + "4. 삭제" + "\t" + "0. 종료 ||  -->>");
+					output.writeUTF(
+							"|| 1. 목록" + "\t" + "2. 등록" + "\t" + "3. 내용" + "\t" + "4. 삭제" + "\t" + "0. 종료 ||  -->>");
 					phasestr = input.readUTF();
 					phase = Integer.parseInt(phasestr);
 					break;
 				case 4:
-					output.writeUTF("위 게시판 중 하나를 선택해 주세요.-->>");
+					output.writeUTF(twoLine());
+					output.writeUTF(" 번호    제목      작성자         날짜" + "\n");
+					output.writeUTF(oneLine());
+					if (ServerBoard.list.size() > 0)
+						try {
+							printList(3, 0);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					output.writeUTF("위 글에서 삭제하실 글을 선택해 주세요.-->>");
 					numstr = input.readUTF();
-					selectnum = Integer.parseInt(numstr);
-					if(ServerBoard.list.size() < selectnum) {
-						output.writeUTF("해당 번호의 게시글은 없습니다." + "\n");
-						phase = 1;
-						break;
-					}else {
-						selectnum -=1;
-					}
+					checknum(numstr);
+					if(phase == 1)break;
 					ServerBoard.list.remove(selectnum);
 					phase = 1;
+					showstate();
 					break;
 
 				default:
 					output.writeUTF("제대로 입력하세용~" + "\n");
+					phase = 1;
 					break;
 				}
 			} catch (Exception e) {

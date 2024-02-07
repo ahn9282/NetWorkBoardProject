@@ -48,10 +48,10 @@ class SendBoard extends Thread {
 				if (insert.equals("0")) {
 					socket.close();
 					break;
-					}
+				}
 				out.writeUTF(insert);
 			} catch (Exception e) {
-			} 
+			}
 
 		}
 
@@ -79,7 +79,7 @@ class ReceiveBoard extends Thread {
 				read = in.readUTF();
 				System.out.print(read);
 			} catch (Exception e) {
-				
+
 			}
 		}
 	}
