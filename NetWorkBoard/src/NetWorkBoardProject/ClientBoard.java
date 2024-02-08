@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
+
 public class ClientBoard {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Socket socket = null;
 		try {
-			socket = new Socket("localhost", 9282);
+			socket = new Socket("192.168.0.183", 9282);
 			SendBoard send = new SendBoard(socket);
 			ReceiveBoard recv = new ReceiveBoard(socket);
 			recv.start();
@@ -47,6 +48,8 @@ class SendBoard extends Thread {
 				insert = sc.nextLine();
 				if (insert.equals("0")) {
 					socket.close();
+					sc.close();
+					System.exit(0);
 					break;
 				}
 				out.writeUTF(insert);
