@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
-
 public class ClientBoard {
-
+static boolean exit_0;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Socket socket = null;
+		exit_0=false;
 		try {
-			socket = new Socket("192.168.0.183", 9282);
+			socket = new Socket("127.0.0.1", 9282);
 			SendBoard send = new SendBoard(socket);
 			ReceiveBoard recv = new ReceiveBoard(socket);
 			recv.start();
@@ -46,13 +46,14 @@ class SendBoard extends Thread {
 		while (out != null) {
 			try {
 				insert = sc.nextLine();
-				if (insert.equals("0")) {
+				if (insert.equals("0") && ClientBoard.exit_0 == true) {
 					socket.close();
 					sc.close();
 					System.exit(0);
 					break;
 				}
 				out.writeUTF(insert);
+				ClientBoard.exit_0 = false;
 			} catch (Exception e) {
 			}
 
@@ -80,7 +81,12 @@ class ReceiveBoard extends Thread {
 		while (in != null) {
 			try {
 				read = in.readUTF();
-				System.out.print(read);
+				if(read.equals("select")) {
+					ClientBoard.exit_0 = true;
+				}
+				else {
+					System.out.print(read);
+				}
 			} catch (Exception e) {
 
 			}

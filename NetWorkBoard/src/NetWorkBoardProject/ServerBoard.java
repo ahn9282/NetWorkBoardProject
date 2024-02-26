@@ -24,10 +24,11 @@ public class ServerBoard {
 			while (true) {
 				socket = serverSocket.accept();
 				System.out.println("이용자가 들어왔습니다." );
+
 				ServerOfBoard server = new ServerOfBoard(socket);
 				server.start();
-
-			}
+			
+		}
 		} catch (Exception e) {
 		}
 
@@ -92,7 +93,7 @@ class ServerOfBoard extends Thread {
 	void showstate() {
 		System.out.println("!!!!!!!!!실시간 게시판 !!!!!!!!!!!");
 		System.out.print(twoLine());
-		System.out.print(" 번호    제목      작성자       날짜         내용" + "\n");
+		System.out.print(" 번호                제목                     작성자                                          날짜                               내용" + "\n");
 		System.out.print(oneLine());
 		if (ServerBoard.list.size() > 0) {
 			try {
@@ -125,8 +126,9 @@ class ServerOfBoard extends Thread {
 			try {
 				switch (phase) {
 				case 1:
+					
 					output.writeUTF(twoLine());
-					output.writeUTF(" 번호    제목      작성자         날짜" + "\n");
+					output.writeUTF(" 번호                   제목                           작성자                                                날짜" + "\n");
 					output.writeUTF(oneLine());
 					if (ServerBoard.list.size() > 0) {
 						try {
@@ -135,12 +137,16 @@ class ServerOfBoard extends Thread {
 							e.printStackTrace();
 						}
 					}
+					output.writeUTF(oneLine());
 					output.writeUTF(
 							"|| 1. 목록" + "\t" + "2. 등록" + "\t" + "3. 내용" + "\t" + "4. 삭제" + "\t" + "0. 종료 ||  -->>");
+					output.writeUTF("select");
 					phasestr = input.readUTF();
 					phase = Integer.parseInt(phasestr);
 					break;
+					
 				case 2:
+					
 					output.writeUTF("제목 >>");
 					title = input.readUTF();
 					output.writeUTF("내용 >>");
@@ -152,13 +158,18 @@ class ServerOfBoard extends Thread {
 					String now = time.format(date);
 					liststr = title + "/%/" + writer + "/%/" + now + "/%/" + content;
 					ServerBoard.list.add(liststr);
+					output.writeUTF("[ 등록 : 번호 : " + ServerBoard.list.size() 
+					+ " 제목 : " + title + " 내용 : " + content + " 작성자 : " + writer
+					+ " 등록 시간 : " + now + " ]" + "\n");
+					output.writeUTF("글이 정상적으로 추가 되었습니다!!" + "\n");
 					phase = 1;
 					showstate();
 					break;
 
 				case 3:
+					
 					output.writeUTF(twoLine());
-					output.writeUTF(" 번호    제목      작성자         날짜" + "\n");
+					output.writeUTF(" 번호                          제목                              작성자                                       날짜" + "\n");
 					output.writeUTF(oneLine());
 					if (ServerBoard.list.size() > 0)
 						try {
@@ -166,12 +177,13 @@ class ServerOfBoard extends Thread {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+					output.writeUTF(oneLine());
 					output.writeUTF("위 게시판 중 하나를 선택해 주세요.-->>");
 					numstr = input.readUTF();
 					checknum(numstr);
 					if(phase == 1)break;
 					output.writeUTF(twoLine());
-					output.writeUTF(" 번호    제목    내용          작성자         날짜" + "\n");
+					output.writeUTF(" 번호             제목                   내용                            작성자                                            날짜" + "\n");
 					output.writeUTF(oneLine());
 					if (ServerBoard.list.size() > 0)
 						try {
@@ -179,14 +191,18 @@ class ServerOfBoard extends Thread {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+					output.writeUTF(oneLine());
 					output.writeUTF(
 							"|| 1. 목록" + "\t" + "2. 등록" + "\t" + "3. 내용" + "\t" + "4. 삭제" + "\t" + "0. 종료 ||  -->>");
+					output.writeUTF("select");
 					phasestr = input.readUTF();
 					phase = Integer.parseInt(phasestr);
 					break;
+					
 				case 4:
+					
 					output.writeUTF(twoLine());
-					output.writeUTF(" 번호    제목      작성자         날짜" + "\n");
+					output.writeUTF(" 번호                       제목                           작성자                                                          날짜" + "\n");
 					output.writeUTF(oneLine());
 					if (ServerBoard.list.size() > 0)
 						try {
@@ -194,6 +210,7 @@ class ServerOfBoard extends Thread {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+					output.writeUTF(oneLine());
 					output.writeUTF("위 글에서 삭제하실 글을 선택해 주세요.-->>");
 					numstr = input.readUTF();
 					checknum(numstr);
@@ -204,9 +221,11 @@ class ServerOfBoard extends Thread {
 					break;
 
 				default:
+					
 					output.writeUTF("제대로 입력하세용~" + "\n");
 					phase = 1;
 					break;
+					
 				}
 			} catch (Exception e) {
 				System.out.println("한명의 이용자가 나갔습니다.");
